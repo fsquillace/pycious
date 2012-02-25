@@ -25,7 +25,12 @@ def execute(cmd):
     if st!=0:
         raise CommandError("Error: "+out)
     
-    return parse(out)
+    if cmd.split()[0] == 'return': 
+        # The command will return an objects
+        out = parse(out)
+    
+    return out
+    
 
 def parse(result):
     l = result.split()
