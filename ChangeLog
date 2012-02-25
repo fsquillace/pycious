@@ -3,8 +3,7 @@ pycious 0.0.6
 - Added the property decorator to each property of the Widget and TextWidget class
 - execute function parse the result obtained only for the main types
 - Introduced a new structure for the wrapper API of awesome
-- Placed the widget function in the corresponding widgets directory
-  and organized in three categories sys, web, apps
+- Placed the widget function in the corresponding widgets directory and organized in three categories sys, web, apps
 - Added rc.py
 - Added some information files
 
