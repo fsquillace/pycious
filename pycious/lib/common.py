@@ -45,3 +45,13 @@ def parse(result):
             parsed_result = l[1]=='true'
     return parsed_result
     
+
+def singleton(cls):
+    instances = {}
+    def getinstance():
+        if cls not in instances:
+            instances[cls] = cls()
+        return instances[cls]
+    return getinstance
+
+

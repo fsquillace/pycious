@@ -1,7 +1,7 @@
 
 import time
 
-from pycious.common import execute
+from pycious.lib.common import execute
 
 
 class Widget:

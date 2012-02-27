@@ -6,42 +6,66 @@ from xml.dom import minidom
 import imaplib
 
 
-def gmail(mailwidget, blink_timeout=0):
-    
-    username = ""
-    password = ""
-    
-    if not username or not password:
-        raise Exception()
-    
-    M = None
-    
-    try:
-        if not M:
-            raise Exception()
-            
-        status, counts = M.status("Inbox","(MESSAGES UNSEEN)")
-        unread = counts[0].split()[4][:-1]
-        
-        if unread == b'0':
-            mailwidget.text("<b><small>no mails</small></b>")
-            mailwidget.bg("trasparent")
-        else:
-            #red bg color when you have unseen mail
-            # Convert bytes to Unicode
-            unread = str(unread, encoding='utf-8')
-            mailwidget.text('<b><small>'+unread+' mails</small></b>')
-            mailwidget.blink_bg("red")
-            #M.logout()
+from pycious.lib.common import singleton
 
-    except:
+@singleton
+class Gmail:
+
+    def __init__(self):
+        """
+        You must specify the gmail account in ~/.netrc in this way:
+            machine google.mail.com
+            user user@gmail.com
+            password mypass 
+        """
+        
+        for line in open('~/.netrc'):
+            pass
+        # TODO manage .netrc file like in vicious
+        
+        self.conn = self.__connect()
+        pass
+    def __connect(self):
         #First field is imap server, second - port (993 for gmail SSL IMAP)
         M=imaplib.IMAP4_SSL("imap.gmail.com", 993)
         #First field is imap login (gmail uses login with domain and '@' character), second - password
         M.login(username, password)
         
-        mailwidget.text('<b><small>na</small></b>')
-        mailwidget.bg('trasparent')
+    def __call__(self):
+        """
+        It returns -1 if it's not available the information otherwise
+         returns the number of unread mail.
+        """
+        mailwidget, blink_timeout=0
+        username = ""
+        password = ""
+        
+        if not username or not password:
+            raise Exception()
+        
+        
+        try:
+            if not M:
+                raise Exception()
+                
+            status, counts = M.status("Inbox","(MESSAGES UNSEEN)")
+            unread = counts[0].split()[4][:-1]
+            
+            if unread == b'0':
+                mailwidget.text("<b><small>no mails</small></b>")
+                mailwidget.bg("trasparent")
+            else:
+                #red bg color when you have unseen mail
+                # Convert bytes to Unicode
+                unread = str(unread, encoding='utf-8')
+                mailwidget.text('<b><small>'+unread+' mails</small></b>')
+                mailwidget.blink_bg("red")
+                #M.logout()
+    
+        except:
+            
+            mailwidget.text('<b><small>na</small></b>')
+            mailwidget.bg('trasparent')
 
 
 
