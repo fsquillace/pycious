@@ -15,7 +15,10 @@ class CommandError(Exception):
     Specify the exception launched when passing a command to dbus.
     """
     pass
-    
+
+class WidgetDoesNotExist(Exception):
+    pass
+
 
 def execute(cmd):
     """
@@ -33,16 +36,21 @@ def execute(cmd):
     
 
 def parse(result):
-    l = result.split()
+    
+    # If the parser is not able to parse 'result' then
+    # returns directly 'result' as a string
     parsed_result = result
 
-    if l != None and len(l)>0:
-        if l[0]=='string':
-            parsed_result = l[1].replace('"','')
-        elif l[0]=='double':
-            parsed_result = float(l[1])
-        elif l[0]=='boolean':
-            parsed_result = l[1]=='true'
+    if result != None and len(result)>0:
+        result = result.strip()
+        typ = result.split()[0]
+        val = result[len(typ)+1:]
+        if typ=='string':
+            parsed_result = val.replace('"','')
+        elif typ=='double':
+            parsed_result = float(val)
+        elif typ=='boolean':
+            parsed_result = val=='true'
     return parsed_result
     
 

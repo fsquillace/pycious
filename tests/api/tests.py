@@ -2,13 +2,13 @@
 
 import unittest
 
-from pycious.widget import TextWidget 
-from pycious.timer import Timer
+from pycious.api.widget import TextWidget 
+from pycious.api.timer import Timer
 
-from pycious.widgets.sys import battery
-from pycious.common import execute
+from pycious.lib.common import execute, WidgetDoesNotExist
 
 # Note: before trying tests you MUST declare the widgets in rc.lua
+
 
 class WidgetTestCase(unittest.TestCase):
     """"""
@@ -20,7 +20,10 @@ class WidgetTestCase(unittest.TestCase):
         self.textwidget.bg = 'trasparent'
         self.textwidget.visible = True
         
-    
+
+    def test_init(self):
+        self.assertRaises(WidgetDoesNotExist, TextWidget, 'no_exists')
+        
     def test_text(self):
         txt = 'ciao'
         self.textwidget.text = txt

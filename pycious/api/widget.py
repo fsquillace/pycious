@@ -1,7 +1,7 @@
 
 import time
 
-from pycious.lib.common import execute
+from pycious.lib.common import execute, WidgetDoesNotExist
 
 
 class Widget:
@@ -12,8 +12,12 @@ class Widget:
         if widget_name == None:
             raise ValueError('You must specify the name of a widget declared in rc.lua.')
         
-        if widget_name:
-            self.widget_name = widget_name
+        # Checks if the widget already exists in rc.lua otherwise launch Exception
+        out = execute('return '+widget_name)
+        if not out:
+            raise WidgetDoesNotExist
+        
+        self.widget_name = widget_name
     
     @property
     def visible(self):

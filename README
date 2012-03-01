@@ -1,25 +1,120 @@
 pycious(1)
 ==========
 
+
+
+Usage
+-----
+To use vicious move it to your awesome configuration directory in
+$XDG_CONFIG_HOME (usually ~/.config):
+
+  $ mv vicious $XDG_CONFIG_HOME/awesome/
+
+Vicious will only load modules for widget types you intend to use in
+your awesome configuration, to avoid having useless modules sitting in
+your memory.
+
+Then add the following to the top of your rc.lua:
+
+  require("vicious")
+
+
+
+
+
+
 NAME
 ----
 pycious - Simple and efficient widget library for the awesome window manager written in Python
 
 DESCRIPTION
 -----------
-*pycious* is a widget library for awesome window manager that allows to write
-widget directly written in Python instead of using Lua language.
+
+
+ Vicious contains modules that gather data about your system,
+and a few helper functions that make it easier to register timers,
+suspend widgets and so on.
+
+*pycious* is a widget library for the "awesome" window manager that allows 
+to write widget directly written in Python instead of using Lua language.
 The main advantage of this is because with Python it is possible to write 
 complex widget using all the available bindings and packages already written 
 in Python.
-*pycious* gives also some already written widget for monitoring system (cpu 
+*pycious* gives also some already written widgets for monitoring system (cpu 
 usage, mem usage, ...), gathering web information (mail, rss, ...) and 
-applications (dictionary, volume, ...)
+applications (dictionary, volume, ...).
 
-INSTALLATION
-------------
-# TODO documentation for installation
-put in ~/.xinitrc: ~/.config/pycious/rc.py &
+*pycious* widget types are a framework for creating your own awesome
+widgets. In *pycious* is rewritten the awesome api reference to be used of 
+creating your widgets. It's also possible to use some function that gather 
+information and can be used to custom the widget as you want. 
+
+
+INSTALLATION & CONFIGURATION
+----------------------------
+In order to install *pycious* consider the following steps:
+
+*  Copy and rename the file 'rc-example.py' from the installation 
+   directory of *pycious* in your '~/.config/pycious/rc.py' 
+*  Put in '~/.xinitrc' the following:
+   -----------------------------
+   ~/.config/pycious/rc.py &
+   -----------------------------
+
+
+USAGE
+-----
+After correctly installing *pycious* you must edit 'rc.py' file
+You must declare all the widgets you want in awesome directly in 'rc.lua' 
+before configuring them in 'rc.py'. Moreover, the widgets have to stay declared
+in a wibox as whatever widget of awesome. For example, if we want to define a 
+widget for mail:
+----------------------------------------------------------
+mailwidget = widget({ type = "textbox", align = "right" })
+
+-- In the creation of wibox
+mywibox[s].widgets{
+...
+...
+mailwidget
+}
+----------------------------------------------------------
+
+After doing so, you just use it directly in 'rc.py' in two ways.
+*  The simplest way is by using the built-in widget of *pycious*.
+   You need to hook it with the corresponding object in 'rc.lua' 
+   by passing in the argument the name of the widget in lua.
+   For example for mail widget:
+------------------------------------------
+from pycious.widgets.web import MailTextWidget
+widget = MailTextWidget('mailwidget')
+widget()
+------------------------------------------
+This create a callable object and every time you call it, it update the 
+number of unread mails.
+
+*  The second way is by using the awesome api reference of *pycious*
+   creating a TextWidget object:
+------------------------------------------
+from pycious.api.widget import TextWidget
+widget = TextWidget('mailwidget')
+------------------------------------------
+   In this case you need to implement the mail logic from scratch. 
+   *pycious* gives for you some utility function for gather information 
+   such as Mail to get the number of unread mail. In this way you can integrate
+   both graphcal and logic component to create custom widget as much fast as 
+   possible:
+--------------------------------------------------
+from pycious.lib.web import Mail
+mail = Mail(username, password, server, port)
+mail() # return number unread mails
+--------------------------------------------------
+
+BUILT-IN WIDGETS
+----------------
+# TODO explain all the available built-in widgets
+
+
 
 COPYRIGHT
 ---------

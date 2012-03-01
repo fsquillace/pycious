@@ -1,4 +1,7 @@
 pycious 0.0.6
+- Improved the rc-example.py introducing new comments
+- Added mail and grss widget according to the new api definition
+- Check the existence of the widget before creating the corresponding wrapper
 - Added getstatusoutput compatible for both python 2.7 and 3.0
 - Added the property decorator to each property of the Widget and TextWidget class
 - execute function parse the result obtained only for the main types
