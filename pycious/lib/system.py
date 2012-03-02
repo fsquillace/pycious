@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+from __future__ import division
 
 import os
 
@@ -7,46 +7,49 @@ from datetime import datetime
 
 from pycious.lib.common import singleton
 
-# # # BATTERY CHARGE FUNCTION # # #
+# # # BATTERY CHARGE # # #
 
-@singleton
-class Battery:
+def battery():
+    """
+    Display power manager information
+    Return a tuple (state,charge percent)
+    """
 
-    def __call__(self):
-        """Display power manager information"""
-        try:
-            battery_path = '/sys/class/power_supply/BAT0/'
-            battery_text = ''
-            percent = 0
-    
-            with open(battery_path + "present") as f:
-                charge_full = int(open(battery_path + "charge_full")\
-                    .readline()[:-1])
-                charge_now = int(open(battery_path + "charge_now")\
-                    .readline()[:-1])
-                state = open(battery_path + "status").readline()[:-1]
-    
-                if state == 'Charging':
-                    battery_text = '<span color=\\\"{0}\\\"><b>+</b> {1}%</span> '
-                elif state == 'Discharging':
-                    battery_text = '<span color=\\\"{0}\\\"><b>-</b> {1}%</span> '
-    
-                if state != 'Charged':
-                    percent = int((charge_now / charge_full) * 100)
-                    
-                    if percent >= 60:
-                        color = 'green'
-                    elif percent >= 20:
-                        color = 'yellow'
-                    else:
-                        color = 'red'
-    
-                    return battery_text.format(color,percent)
-                else:
-                    return ''
-        except:
-            return 'na'
-        
+    try:
+        battery_path = '/sys/class/power_supply/BAT0/'
+        battery_text = ''
+        percent = 0
+
+        with open(battery_path + "present") as f:
+            charge_full = int(open(battery_path + "charge_full")\
+                .readline()[:-1])
+            charge_now = int(open(battery_path + "charge_now")\
+                .readline()[:-1])
+            state = open(battery_path + "status").readline()[:-1]
+
+            # if state == 'Charging':
+            #     battery_text = '<span color=\\\"{0}\\\"><b>+</b> {1}%</span> '
+            # elif state == 'Discharging':
+            #     battery_text = '<span color=\\\"{0}\\\"><b>-</b> {1}%</span> '
+
+            if state != 'Charged':
+                percent = int((charge_now / charge_full) * 100)
+                
+                # if percent >= 60:
+                #     color = 'green'
+                # elif percent >= 20:
+                #     color = 'yellow'
+                # else:
+                #     color = 'red'
+
+                return state,percent
+            else:
+                return state,100
+    except:
+        return 'na',0
+
+# # # CPU LOAD INFORMATION # # #
+
 @singleton   
 class CPU:
     def __init__(self):
@@ -84,10 +87,14 @@ class CPU:
                 self.prev_work_jiffies = curr_work_jiffies
                 self.prev_total_jiffies = curr_total_jiffies
         except:
-            pass
+            return None
 
+# singleton cpu instance
+cpu = CPU()
 
-def mem_usage(mem_widget):
+# # # MEMORY USAGE # # #
+
+def mem_usage():
     """
     Display current Memory usage
     """
@@ -113,67 +120,77 @@ def mem_usage(mem_widget):
                     used_memory -= int_value
                 else:
                     # Display memory usage and break loop!
-                    mem_widget.add_value(used_memory / total_memory)
-                    break
+                    return (used_memory / total_memory)
                     
                 # Next line
                 i += 1
     except Exception as e:
-        print(e)
+        return None
+    
+# # # DATE INFORMATION # # #
 
-    
-    
 def date():
     """
     Display current datetime information
     """
     return datetime.today().strftime("%a %b %d, %H:%M ")
 
+# # # NETWORK STATISTICS # # #
 
-
-def network_statistics(network_widget, ifaces = {'wlan0':{'tx':0, 'rx':0}}):
+@singleton
+class NetworkStatistics:
     """
-    Collects and display information about iface network usage
+    Generate an Iterator for all ifaces with their main information.
+    yield a tuple (iface_name, rx_bytes, tx_bytes)
     """
-    
-    # Used to store temporary information to display
-    message = ""
 
-    try:
-        # Try to collect all interfaces available
-        # on the system
-        if len(ifaces) == 0:
-            ifaces = {iface:{'tx':0,'rx':0} \
-                        for iface in os.listdir('/sys/class/net/') \
-                        if iface != 'lo'} # Exclude lo interface, who cares!?
+    def __init__(self):
+        self.__ifaces = {}
 
-        # For each interfaces display the statistics
+    def __call__(self):
+        """
+        Collects and display information about iface network usage
+        """
+        
+        # Used to store temporary information to display
         message = ""
-        for iface in ifaces:
-            # Calculate actual values
-            rx = int(open('/sys/class/net/' + iface + '/statistics/rx_bytes')\
-                .readline())
-            tx = int(open('/sys/class/net/' + iface + '/statistics/tx_bytes')\
-                .readline())
 
-            # Format values
-            # TODO: May be useful format current usage regards bytes multiple
-            # (e.g. KB, MB, GB, and so on...)
-            actual_rx = int((rx - ifaces[iface]['rx'])/1024)
-            actual_tx = int((tx - ifaces[iface]['tx'])/1024)
-            
-            # Format message
-            message += "[<b>{0}:</b> rx: {1}KB tx: {2}KB] ".format(
-                iface, actual_rx, actual_tx)
+        try:
+            # Try to collect all interfaces available
+            # on the system
+            if len(self.__ifaces) == 0:
+                self.__ifaces = {iface:{'tx':0,'rx':0} \
+                            for iface in os.listdir('/sys/class/net/') \
+                            if iface != 'lo'} # Exclude lo interface, who cares!?
 
-            # Updates values
-            ifaces[iface]['rx'] = rx
-            ifaces[iface]['tx'] = tx
+            # For each interfaces display the statistics
+            message = ""
+            for iface in self.__ifaces:
+                # Calculate actual values
+                rx = int(open('/sys/class/net/' + iface + '/statistics/rx_bytes')\
+                    .readline())
+                tx = int(open('/sys/class/net/' + iface + '/statistics/tx_bytes')\
+                    .readline())
 
-        # Display message
-        network_widget.text(message)
-    except:
-        network_widget.text("Unable to fetch iface activity")
+                # Format values in Bytes
+                actual_rx = int((rx - self.__ifaces[iface]['rx'])/1024)
+                actual_tx = int((tx - self.__ifaces[iface]['tx'])/1024)
+                
+                # Format message
+                # message += "[<b>{0}:</b> rx: {1}KB tx: {2}KB] ".format(
+                #     iface, actual_rx, actual_tx)
+
+                # Updates history values
+                self.__ifaces[iface]['rx'] = rx
+                self.__ifaces[iface]['tx'] = tx
+
+                # yield a tuple(iface, rx_bytes, tx_bytes)
+                yield iface,actual_rx,actual_tx
+        except:
+            yield None
+
+#singleton NetworkStatistics
+network_statistics = NetworkStatistics()
 
 # # # FILESYSTEM USAGE # # #
 
