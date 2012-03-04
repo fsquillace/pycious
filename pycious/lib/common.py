@@ -36,7 +36,7 @@ def execute(cmd):
     return out
 
 # import the python module in awesome
-execute('require("python")')
+execute("require('python')")
 
 
 

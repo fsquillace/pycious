@@ -15,7 +15,7 @@ class Widget(object):
         # Checks if the widget already exists in rc.lua otherwise launch Exception
         out = to_python(execute('return '+widget_name))
         if not out:
-            raise WidgetDoesNotExist
+            raise WidgetDoesNotExist("Error: The widget: "+widget_name+" doesn't exist in rc.lua.")
         
         if out[:6] != 'widget':
             print(out)
