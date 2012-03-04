@@ -23,14 +23,12 @@ class Timer(threading.Thread):
         are stored into a dict
         """
         if not callable(func):
-            raise Exception('Error: func is not callable.')
-        # TODO It must launch an exception
+            raise ValueError('Error: func is not callable.')
         
         self.__signals[name] = func
     
     def remove_signal(self, name=''):
         """"""
-        # TODO It must launch an exception
         del self.__signals[name]
     
     def emit_signal(self, name):

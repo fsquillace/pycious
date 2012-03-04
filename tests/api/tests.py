@@ -2,7 +2,7 @@
 
 import unittest
 
-from pycious.api.widget import TextWidget 
+from pycious.api.widget import TextBoxWidget 
 from pycious.api.timer import Timer
 
 from pycious.lib.common import execute, WidgetDoesNotExist
@@ -14,15 +14,32 @@ class WidgetTestCase(unittest.TestCase):
     """"""
               
     def setUp(self):
-        self.textwidget = TextWidget('mailwidget')
+        self.textwidget = TextBoxWidget('mailwidget')
+        
+    def tearDown(self):
+        self.textwidget.visible = True
+
+    def test_init(self):
+        self.assertRaises(WidgetDoesNotExist, TextBoxWidget, 'no_exists')
+        
+    def test_visible(self):
+        vis= False
+        self.textwidget.visible = vis
+        self.assertEqual(self.textwidget.visible, vis)
+
+
+
+
+class TextWidgetTestCase(unittest.TestCase):
+    """"""
+              
+    def setUp(self):
+        self.textwidget = TextBoxWidget('mailwidget')
         
     def tearDown(self):
         self.textwidget.bg = 'trasparent'
         self.textwidget.visible = True
-        
-
-    def test_init(self):
-        self.assertRaises(WidgetDoesNotExist, TextWidget, 'no_exists')
+        self.textwidget.width = 0
         
     def test_text(self):
         txt = 'ciao'
@@ -44,11 +61,6 @@ class WidgetTestCase(unittest.TestCase):
         widt= 40
         self.textwidget.border_width = widt
         self.assertEqual(self.textwidget.border_width, widt)
-        
-    def test_visible(self):
-        vis= False
-        self.textwidget.visible = vis
-        self.assertEqual(self.textwidget.visible, vis)
     
     def test_border_color(self):
         color = 'yellow' 
@@ -61,23 +73,26 @@ class WidgetTestCase(unittest.TestCase):
         self.textwidget.align = txt
         self.assertEqual(self.textwidget.align, txt)
         
-#class TimerTestCase(unittest.TestCase):
+      
+#class ImageBoxWidgetTestCase(unittest.TestCase):
 #    """"""
+#              
 #    def setUp(self):
-#        self.battery_widget = TextWidget("batterywidget")
-#        self.battery_timer = Timer(2)
+#        self.textwidget = TextBoxWidget('imagewidget')
 #        
-#    def test_add_signal(self):
-#        self.battery_timer.add_signal("battery", lambda: battery(self.battery_widget))
-#        self.assert_('battery' in self.battery_timer.__signals)
+#    def tearDown(self):
+#        self.textwidget.bg = 'trasparent'
 #
-#    def test_remove_signal(self):
-#        self.battery_timer.remove_signal("battery")
-#        self.assert_('battery' in self.battery_timer.__signals)
-#    
-#    def test_start(self):
-#        self.battery_timer.add_signal("battery", lambda: battery(self.battery_widget))
-#        self.battery_timer.start()
+#    def test_init(self):
+#        self.assertRaises(WidgetDoesNotExist, TextBoxWidget, 'no_exists')
+#        
+#        
+#    def test_image(self):
+#        vis= False
+#        self.textwidget.visible = vis
+#        self.assertEqual(self.textwidget.visible, vis)
+        
+        
 
 
 if __name__ == "__main__":

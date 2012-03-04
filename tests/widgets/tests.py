@@ -13,7 +13,7 @@ class MailTestCase(unittest.TestCase):
               
     def setUp(self):
         self.wrong_mail = MailTextWidget('mailwidget', 'user','pass','server','port')
-        f = open('credentials')
+        f = open('../credentials')
         user = f.readline()
         password = f.readline()
         f.close()

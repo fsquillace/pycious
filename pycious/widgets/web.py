@@ -7,12 +7,12 @@ Created on Feb 27, 2012
 from pycious.lib.web import Mail, Grss
 
 # Importing Base widget
-from pycious.api.widget import TextWidget
+from pycious.api.widget import TextBoxWidget
 
 
-class MailTextWidget(TextWidget):
+class MailTextWidget(TextBoxWidget):
     def __init__(self, widget_name, username, password, server='imap.gmail.com', port=993):
-        TextWidget.__init__(self, widget_name)
+        TextBoxWidget.__init__(self, widget_name)
         
         # get the mail object
         self.mail = Mail(username, password, server, port)
@@ -31,12 +31,12 @@ class MailTextWidget(TextWidget):
         else:
             #red bg color when you have unseen mail
             self.text = str(unread)+' mails'
-            self.blink_bg = "red"
+            self.blink_bg("red")
 
 
-class GrssTextWidget(TextWidget):
+class GrssTextWidget(TextBoxWidget):
     def __init__(self, widget_name, username, password):
-        TextWidget.__init__(self, widget_name)
+        TextBoxWidget.__init__(self, widget_name)
         
         # get the grss object
         self.grss = Grss(username, password)
@@ -55,4 +55,4 @@ class GrssTextWidget(TextWidget):
         else:
             #red bg color when you have unseen mail
             self.text = str(unread)+' news'
-            self.blink_bg = "red"
+            self.blink_bg("red")

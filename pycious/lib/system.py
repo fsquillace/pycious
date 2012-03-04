@@ -60,6 +60,7 @@ class CPU:
         """
         Display current CPUs usage
         """
+        
         try:
     
             # Retrive main information about CPU load
@@ -67,10 +68,11 @@ class CPU:
             # 1. http://stackoverflow.com/questions/3017162
             # /how-to-get-total-cpu-usage-in-linux-c
             # 2. http://www.linuxhowtos.org/System/procstat.htm
-    
+
             with open('/proc/stat') as f:
-                cpu_jiffies = map(int, f.readline().split(' ')[2:9])
-    
+                l_s = f.readline().split(' ')[2:9]
+                cpu_jiffies = [int(x) for x in l_s]
+
                 # Calculate the current number of jiffies
                 curr_work_jiffies = sum(cpu_jiffies[0:3])
                 curr_total_jiffies = sum(cpu_jiffies)
@@ -82,11 +84,13 @@ class CPU:
                                 ( curr_total_jiffies - self.prev_total_jiffies )
                     # Display percentage
                     return cpu_usage
-    
+
                 # Update previous jiffies for next call
                 self.prev_work_jiffies = curr_work_jiffies
                 self.prev_total_jiffies = curr_total_jiffies
-        except:
+                
+                return 0.0
+        except Exception as e:
             return None
 
 # singleton cpu instance

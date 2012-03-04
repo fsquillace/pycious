@@ -3,21 +3,20 @@ from pycious.lib.system import date, battery, cpu, \
     network_statistics, mem_usage
 
 # Importing Base widget
-from pycious.api.widget import TextWidget
+from pycious.api.widget import TextBoxWidget
 # This should be "from pycious.api.awful.widget import Graph"
 from pycious.api.awful.widget.graph import Graph
 
-class BatteryTextWidget(TextWidget):
+class BatteryTextWidget(TextBoxWidget):
     def __init__(self, widget_name):
-        TextWidget.__init__(self, widget_name) 
+        TextBoxWidget.__init__(self, widget_name) 
     
     def __call__(self):
-        self.text = battery()
-        pass
+        self.text = str(battery()[1])
 
-class DateTextWidget(TextWidget):
+class DateTextWidget(TextBoxWidget):
     def __init__(self, widget_name):
-        TextWidget.__init__(self, widget_name)
+        TextBoxWidget.__init__(self, widget_name)
     
     def __call__(self):
         self.text = date()
